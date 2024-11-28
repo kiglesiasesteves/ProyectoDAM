@@ -46,8 +46,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.kizito.calendar) // Añadir esta línea
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    // Calendar library for Android Views
+    implementation(libs.view)
+    // Calendar library for Android Jetpack Compose
+    implementation(libs.compose.v260)
 }
