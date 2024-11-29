@@ -22,4 +22,9 @@
     android:name="com.example.menstruacionnavapp.ui.notifications.NotificationsFragment"
     android:label="@string/title_notifications"
     tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/navigation_premium"
+        android:name="com.example.menstruacionnavapp.ui.premium.PremiumFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_notifications" />
 </navigation>

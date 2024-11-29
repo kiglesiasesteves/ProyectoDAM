@@ -12,5 +12,9 @@
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/ic_running_person"
                 android:title="@string/title_notifications" />
+    <item
+        android:id="@+id/navigation_premium"
+        android:icon="@drawable/ic_premium_icon"
+        android:title="Premium" />
 />
 </menu>
