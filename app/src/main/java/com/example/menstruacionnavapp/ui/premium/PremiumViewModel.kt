@@ -40,9 +40,12 @@ class PremiumViewModel : ViewModel() {
             💳 **Activa tu cuenta Premium hoy mismo:**
             Realiza tu pago de suscripción de forma fácil y segura a través de **PayPal**.  
             
-            🔓 ¡Desbloquea todo tu potencial con CicloFit Premium! 💪
+            🔓 ¡Desbloquea todo tu potencial con CicloFit Premium en el siguiente botón! 💪
         """.trimIndent()
     }
     val text: LiveData<String> = _text
 
+    fun onButtonClick() {
+        _text.value = "Button clicked!"
+    }
 }
