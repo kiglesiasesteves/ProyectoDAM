@@ -32,5 +32,6 @@ class PremiumViewModel : ViewModel() {
 
     fun onButtonClick() {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com"))
+   //función modificable
     }
 }
