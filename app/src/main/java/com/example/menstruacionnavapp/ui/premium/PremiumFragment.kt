@@ -30,9 +30,7 @@ class PremiumFragment : Fragment() {
 
         val textView: TextView = binding.textPremium
         val button: Button = binding.buttonHome
-        premiumViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+
 
         button.setOnClickListener {
             premiumViewModel.onButtonClick()

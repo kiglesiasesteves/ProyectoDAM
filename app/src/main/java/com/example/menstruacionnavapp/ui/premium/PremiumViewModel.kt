@@ -28,24 +28,9 @@ import androidx.lifecycle.ViewModel
 
 
 class PremiumViewModel : ViewModel() {
-    private val _text = MutableLiveData<String>().apply {
-        value = """
-            🌟 ¡Bienvenido a **CicloFit Premium**! 🌟
-            
-            🚴‍♂️ **Descubre nuevas funcionalidades exclusivas:**
-            - 🏋️ Planes de entrenamiento personalizados.
-            - 📈 Estadísticas avanzadas de tu progreso.
-            - 🎵 Integración con tus playlists favoritas.
-            
-            💳 **Activa tu cuenta Premium hoy mismo:**
-            Realiza tu pago de suscripción de forma fácil y segura a través de **PayPal**.  
-            
-            🔓 ¡Desbloquea todo tu potencial con CicloFit Premium en el siguiente botón! 💪
-        """.trimIndent()
-    }
-    val text: LiveData<String> = _text
+
 
     fun onButtonClick() {
-        _text.value = "Button clicked!"
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com"))
     }
 }

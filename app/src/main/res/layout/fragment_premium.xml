@@ -33,6 +33,8 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:text="@string/bienvenido_a_ciclofit_premium_n_n_con_ciclofit_premium_podr_s_disfrutar_de_todas_las_funcionalidades_de_la_aplicaci_n_sin_anuncios_n_n_adem_s_tendr_s_acceso_a_funcionalidades_exclusivas_como_estad_sticas_avanzadas_y_entrenamientos_personalizados_de_nuestros_expertos_n_n_realiza_tu_pago_de_suscripci_n_de_forma_f_cil_y_segura_a_trav_s_de_paypal_n_n_desbloquea_todo_tu_potencial_con_ciclofit_premium_en_el_siguiente_bot_n"
             android:textAlignment="center"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -40,6 +42,6 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.113" />
+            app:layout_constraintVertical_bias="0.125" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
