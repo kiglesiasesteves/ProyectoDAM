@@ -1,42 +1,42 @@
 package com.example.menstruacionnavapp.ui.premium
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.menstruacionnavapp.databinding.FragmentPremiumBinding
-import com.example.menstruacionnavapp.ui.premium.PremiumViewModel
 
 class PremiumFragment : Fragment() {
     private var _binding: FragmentPremiumBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var premiumViewModel: PremiumViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val premiumViewModel = ViewModelProvider(this).get(PremiumViewModel::class.java)
+        premiumViewModel = ViewModelProvider(this).get(PremiumViewModel::class.java)
 
         _binding = FragmentPremiumBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textPremium
         val button: Button = binding.buttonHome
-
-
         button.setOnClickListener {
-            premiumViewModel.onButtonClick()
+            premiumViewModel.onButtonClick(requireActivity())
         }
 
         return root
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        premiumViewModel.handleActivityResult(requestCode, resultCode, data)
     }
 
     override fun onDestroyView() {
