@@ -18,13 +18,24 @@
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-    android:id="@+id/navigation_notifications"
-    android:name="com.example.menstruacionnavapp.ui.notifications.FitnessFragment"
-    android:label="@string/title_notifications"
-    tools:layout="@layout/fragment_fitness" />
+        android:id="@+id/navigation_notifications"
+        android:name="com.example.menstruacionnavapp.ui.notifications.FitnessFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_fitness">
+        <action
+            android:id="@+id/action_fitnessFragment_to_gymsFragment"
+            app:destination="@id/navigation_gyms" />
+    </fragment>
+
     <fragment
         android:id="@+id/navigation_premium"
         android:name="com.example.menstruacionnavapp.ui.premium.PremiumFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_fitness" />
+
+    <fragment
+        android:id="@+id/navigation_gyms"
+        android:name="com.example.menstruacionnavapp.ui.gyms.GymsFragment"
+        android:label="GymsFragment"
+        tools:layout="@layout/fragment_gyms" />
 </navigation>
