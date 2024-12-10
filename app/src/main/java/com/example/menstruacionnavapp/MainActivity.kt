@@ -15,10 +15,9 @@ import com.example.menstruacionnavapp.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        private const val PAYPAL_CLIENT_ID = "AbpDYsM919sWwIgAtk2vJbmlBdeXM_0qOFId-RV93nIGoMfoE-EvxE4lKxYMjCfHISJeBqNTroLDXlBJ"
         val config = PayPalConfiguration()
             .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
-            .clientId(PAYPAL_CLIENT_ID)
+            .clientId("AU4griK8TjiAmaOj8Cw312q5tuPMq_IQ_0PX9GV_TdxafhibBJsqcUutjtwrdCMZwoF53iXIj7IOcKOH")
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -26,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Iniciar el servicio de PayPal
+        // Start PayPal service
         val intent = Intent(this, PayPalService::class.java)
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config)
         startService(intent)
@@ -37,8 +36,6 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
@@ -52,6 +49,4 @@ class MainActivity : AppCompatActivity() {
         stopService(Intent(this, PayPalService::class.java))
         super.onDestroy()
     }
-
-
 }
