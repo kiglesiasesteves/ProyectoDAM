@@ -4,9 +4,11 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +24,7 @@ import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
 
 class GymFragment : Fragment() {
     private var _binding: FragmentGymsBinding? = null
@@ -61,19 +64,41 @@ class GymFragment : Fragment() {
 
             // Add markers for the gyms (replace with actual gym locations)
             val gyms = listOf(
-                LatLng(42.22560424737218, -8.73470873234326), // Example gym location 1
-                LatLng(42.22640424737218, -8.73570873234326), // Example gym location 2
-                LatLng(42.22760424737218, -8.73670873234326)  // Example gym location 3
+                LatLng(42.22560424737218, -8.73470873234326) to "Synergym Torrecedeira: <a href='https://synergym.es'>synergym.es</a>",
+                LatLng(42.22640424737218, -8.73570873234326) to "Gimnasio del Pueblo: Description",
+                LatLng(42.22760424737218, -8.73670873234326) to "Con mucha fuerza: Description"
             )
 
-            gyms.forEach { gymLocation ->
-                googleMap.addMarker(MarkerOptions().position(gymLocation).title("Gym Location"))
+            gyms.forEach { (gymLocation, description) ->
+                googleMap.addMarker(MarkerOptions().position(gymLocation).title("Gimnasio").snippet(description))
                 boundsBuilder.include(gymLocation) // Add each gym location to the bounds
             }
 
             // Move camera to show all gyms with a padding of 100 pixels
             val bounds = boundsBuilder.build()
             googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+
+            // Set a custom InfoWindowAdapter to render HTML and clickable links
+            googleMap.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
+                override fun getInfoWindow(marker: Marker): View? {
+                    return null // We don't need a custom window, just the default
+                }
+
+                override fun getInfoContents(marker: Marker): View? {
+                    // Custom view for info contents
+                    val view = LayoutInflater.from(requireContext()).inflate(R.layout.custom_info_window, null)
+
+                    // Set the title (marker title)
+                    val titleTextView = view.findViewById<TextView>(R.id.title)
+                    titleTextView.text = marker.title
+
+                    // Set the description (marker snippet) - This will be the HTML link
+                    val descriptionTextView = view.findViewById<TextView>(R.id.description)
+                    descriptionTextView.text = Html.fromHtml(marker.snippet) // Use Html.fromHtml to render HTML
+
+                    return view
+                }
+            })
 
             // Get the current location of the device
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
