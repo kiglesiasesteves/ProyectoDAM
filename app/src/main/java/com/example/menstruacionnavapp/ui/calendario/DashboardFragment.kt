@@ -1,4 +1,4 @@
-package com.example.menstruacionnavapp.ui.dashboard
+package com.example.menstruacionnavapp.ui.calendario
 
 import android.os.Bundle
 import android.view.LayoutInflater
