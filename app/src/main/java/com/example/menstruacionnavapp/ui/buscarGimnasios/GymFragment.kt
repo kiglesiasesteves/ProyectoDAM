@@ -64,13 +64,25 @@ class GymFragment : Fragment() {
 
             // Add markers for the gyms (replace with actual gym locations)
             val gyms = listOf(
-                LatLng(42.22560424737218, -8.73470873234326) to "Synergym Torrecedeira: <a href='https://synergym.es'>synergym.es</a>",
-                LatLng(42.22640424737218, -8.73570873234326) to "Gimnasio del Pueblo: Description",
-                LatLng(42.22760424737218, -8.73670873234326) to "Con mucha fuerza: Description"
+                Triple(LatLng(42.22560424737218, -8.73470873234326), "Synergym Torrecedeira", "<a href='https://synergym.es'>synergym.es</a>"),
+                Triple(LatLng(42.22640424737218, -8.73570873234326), "Gimnasio del Pueblo", "Description"),
+                Triple(LatLng(42.22760424737218, -8.73670873234326), "Con mucha fuerza", "Description"),
+                Triple(LatLng(42.22860424737218, -8.73770873234326), "Gym Alpha", "A modern gym with state-of-the-art equipment"),
+                Triple(LatLng(42.22960424737218, -8.73870873234326), "FitNation", "Your go-to place for fitness goals"),
+                Triple(LatLng(42.23060424737218, -8.73970873234326), "PowerHouse Gym", "Strength training, cardio, and more"),
+                Triple(LatLng(42.23160424737218, -8.74070873234326), "BodyFlex", "Yoga, pilates, and fitness classes"),
+                Triple(LatLng(42.23260424737218, -8.74170873234326), "Gym Force", "CrossFit and intensive workouts"),
+                Triple(LatLng(42.23360424737218, -8.74270873234326), "Elite Fitness Center", "Exclusive gym with VIP services"),
+                Triple(LatLng(42.23460424737218, -8.74370873234326), "ActiveZone", "A fun and energetic fitness environment"),
+                Triple(LatLng(42.23560424737218, -8.74470873234326), "The Fitness Loft", "Comprehensive gym with personal training"),
+                Triple(LatLng(42.23660424737218, -8.74570873234326), "Ultimate Fit", "Where fitness meets performance"),
+                Triple(LatLng(42.23760424737218, -8.74670873234326), "Xtreme Fitness", "Extreme workouts for extreme results"),
+                Triple(LatLng(42.23860424737218, -8.74770873234326), "Flex Gym", "Flexibility and strength training combined"),
+                Triple(LatLng(42.23960424737218, -8.74870873234326), "Peak Fitness", "Achieve your peak performance")
             )
 
-            gyms.forEach { (gymLocation, description) ->
-                googleMap.addMarker(MarkerOptions().position(gymLocation).title("Gimnasio").snippet(description))
+            gyms.forEach { (gymLocation, title, description) ->
+                googleMap.addMarker(MarkerOptions().position(gymLocation).title(title).snippet(description))
                 boundsBuilder.include(gymLocation) // Add each gym location to the bounds
             }
 
