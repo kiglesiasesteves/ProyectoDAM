@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/navigation_gyms"
-        android:name="com.example.menstruacionnavapp.ui.gyms.GymsFragment"
-        android:label="GymsFragment"
+        android:name="com.example.menstruacionnavapp.ui.buscarGimnasios.GymFragment"
+        android:label="Buscar Gimnasios"
         tools:layout="@layout/fragment_gyms" />
 </navigation>
