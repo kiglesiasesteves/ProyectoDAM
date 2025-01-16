@@ -64,6 +64,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.android.sdk)
     implementation("org.maplibre.gl:android-sdk:11.6.1")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
 
 
 
