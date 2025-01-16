@@ -6,11 +6,8 @@ import androidx.lifecycle.ViewModel
 
 class HomeViewModel : ViewModel() {
     private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+        value = "Visita la página Premium para más información!"
     }
     val text: LiveData<String> = _text
 
-    fun onButtonClick() {
-        _text.value = "Button clicked!"
-    }
 }

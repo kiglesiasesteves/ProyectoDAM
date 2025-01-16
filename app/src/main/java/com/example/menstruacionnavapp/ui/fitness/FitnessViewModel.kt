@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class FitnessViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is notifications Fragment"
+        value = "Visita la página premium para más información"
     }
     val text: LiveData<String> = _text
 }

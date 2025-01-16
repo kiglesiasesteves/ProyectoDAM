@@ -38,4 +38,8 @@ class MainActivity : AppCompatActivity() {
         // Configurar la vista de navegación inferior con el NavController
         navView.setupWithNavController(navController)
     }
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
 }
