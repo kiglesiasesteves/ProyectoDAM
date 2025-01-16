@@ -1,4 +1,4 @@
-package com.example.menstruacionnavapp.ui.notifications
+package com.example.menstruacionnavapp.ui.fitness
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

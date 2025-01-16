@@ -1,4 +1,4 @@
-package com.example.menstruacionnavapp.ui.notifications
+package com.example.menstruacionnavapp.ui.fitness
 
 import android.os.Bundle
 import android.view.LayoutInflater
