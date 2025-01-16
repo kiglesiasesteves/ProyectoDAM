@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLngBounds
 
 class GymFragment : Fragment() {
     private var _binding: FragmentGymsBinding? = null
@@ -43,6 +44,7 @@ class GymFragment : Fragment() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(OnMapReadyCallback { googleMap ->
             this.googleMap = googleMap
+
             // Enable the My Location button if permission is granted
             if (ActivityCompat.checkSelfPermission(
                     requireContext(),
@@ -54,6 +56,25 @@ class GymFragment : Fragment() {
                 // Handle permission denial
             }
 
+            // Create a LatLngBounds builder
+            val boundsBuilder = LatLngBounds.builder()
+
+            // Add markers for the gyms (replace with actual gym locations)
+            val gyms = listOf(
+                LatLng(42.22560424737218, -8.73470873234326), // Example gym location 1
+                LatLng(42.22640424737218, -8.73570873234326), // Example gym location 2
+                LatLng(42.22760424737218, -8.73670873234326)  // Example gym location 3
+            )
+
+            gyms.forEach { gymLocation ->
+                googleMap.addMarker(MarkerOptions().position(gymLocation).title("Gym Location"))
+                boundsBuilder.include(gymLocation) // Add each gym location to the bounds
+            }
+
+            // Move camera to show all gyms with a padding of 100 pixels
+            val bounds = boundsBuilder.build()
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+
             // Get the current location of the device
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 location?.let {
@@ -61,11 +82,6 @@ class GymFragment : Fragment() {
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
                 }
             }
-
-            // Add markers (for demonstration purposes)
-            val gymLocation = LatLng(42.22560424737218, -8.73470873234326) // Example coordinates (replace with actual gym locations)
-            googleMap.addMarker(MarkerOptions().position(gymLocation).title("Synergym Torrecedeira"))
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(gymLocation))
         })
 
         return root
