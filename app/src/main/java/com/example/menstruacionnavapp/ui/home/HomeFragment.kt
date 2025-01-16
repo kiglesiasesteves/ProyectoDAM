@@ -26,13 +26,8 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         val textView: TextView = binding.textHome
-        val button: Button = binding.buttonHome
         homeViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
-        }
-
-        button.setOnClickListener {
-            homeViewModel.onButtonClick()
         }
 
         return root
