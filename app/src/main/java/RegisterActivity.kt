@@ -66,7 +66,7 @@ class RegisterActivity : AppCompatActivity() {
                                 "Error en el registro: ${exception?.message}",
                                 Toast.LENGTH_LONG
                             ).show()
-                            Log.d("Erroritos", "Error en el registro: ${exception?.message}")
+                            Log.d("ErrorRegistro", "Error en el registro: ${exception?.message}")
                         }
                     }
             } else {

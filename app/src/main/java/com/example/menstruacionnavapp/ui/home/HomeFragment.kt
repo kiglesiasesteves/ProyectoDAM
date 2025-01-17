@@ -1,5 +1,6 @@
 package com.example.menstruacionnavapp.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.menstruacionnavapp.databinding.FragmentHomeBinding
+import com.example.menstruacionnavapp.ui.register.RegisterActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment : Fragment() {
 
@@ -25,14 +28,15 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textHome
         val button: Button = binding.buttonHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
 
+
+        // 🔹 Agregar funcionalidad para cerrar sesión al presionar el botón
         button.setOnClickListener {
-            homeViewModel.onButtonClick()
+            FirebaseAuth.getInstance().signOut() // Cierra la sesión del usuario actual
+            val intent = Intent(requireContext(), RegisterActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish() // Cierra la actividad actual
         }
 
         return root
