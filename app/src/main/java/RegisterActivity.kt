@@ -1,82 +1,78 @@
 package com.example.menstruacionnavapp.ui.register
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.menstruacionnavapp.R
+import com.example.menstruacionnavapp.MainActivity
+import com.example.menstruacionnavapp.databinding.ActivityRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-import com.example.menstruacionnavapp.databinding.ActivityRegisterBinding
-
-
 class RegisterActivity : AppCompatActivity() {
 
-    // Referencias a los campos del formulario
-    private lateinit var etName: EditText
-    private lateinit var etUsername: EditText
-    private lateinit var etEmail: EditText
-    private lateinit var etPassword: EditText
-    private lateinit var btnRegister: Button
-
-    private val db = FirebaseFirestore.getInstance() // Instancia de Firestore
-    private val auth = FirebaseAuth.getInstance() // Instancia de autenticación de Firebase
+    private lateinit var binding: ActivityRegisterBinding
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Inicializar las vistas
-        etName = findViewById(R.id.etName)
-        etUsername = findViewById(R.id.etUsername)
-        etEmail = findViewById(R.id.etEmail)
-        etPassword = findViewById(R.id.etPassword)
-        btnRegister = findViewById(R.id.btnRegister)
+        // Función de registro
+        binding.btnRegister.setOnClickListener {
+            val email = binding.etEmail.text.toString()
+            val password = binding.etPassword.text.toString()
+            val name = binding.etName.text.toString()  // Nombre del usuario
+            val username = binding.etUsername.text.toString()  // Nombre de usuario (nuevo campo)
 
-        // Lógica para registrar el usuario al hacer clic en el botón
-        btnRegister.setOnClickListener {
-            registerUser()
-        }
-    }
+            if (email.isNotEmpty() && password.isNotEmpty() && name.isNotEmpty() && username.isNotEmpty()) {
+                // Crear usuario en Firebase Authentication
+                auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val user = auth.currentUser
+                            val userId = user?.uid
+                            val userData = hashMapOf(
+                                "nombre" to name,
+                                "nombreUsuario" to username,  // Guardar nombre de usuario
+                                "email" to email,
+                                "contrasenha" to password  // Guardar la contraseña (aunque normalmente se recomienda no guardar la contraseña en texto plano)
+                            )
 
-    // Función para registrar al usuario y guardar los datos en Firestore
-    private fun registerUser() {
-        val name = etName.text.toString()
-        val username = etUsername.text.toString()
-        val email = etEmail.text.toString()
-        val password = etPassword.text.toString()
-
-        // Validación básica
-        if (name.isEmpty() || username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            // Mostrar un mensaje de error
-            return
-        }
-
-        // Crear usuario en Firebase Authentication
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Guardar los datos del usuario en Firestore
-                    val user = hashMapOf(
-                        "name" to name,
-                        "username" to username,
-                        "email" to email,
-                        "password" to password // Guarda la contraseña solo si es necesario
-                    )
-
-                    val userRef = db.collection("usuarios").document(auth.currentUser!!.uid)
-                    userRef.set(user)
-                        .addOnSuccessListener {
-                            // El usuario se registró con éxito
-                            // Redirigir al usuario a la siguiente pantalla (por ejemplo, la pantalla principal)
+                            if (userId != null) {
+                                db.collection("usuarios").document(userId).set(userData)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                    .addOnFailureListener { firestoreException ->
+                                        Toast.makeText(
+                                            this,
+                                            "Error al guardar los datos: ${firestoreException.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                            }
+                        } else {
+                            // Si falla el registro en Firebase Authentication, obtenemos más detalles
+                            val exception = task.exception
+                            Toast.makeText(
+                                this,
+                                "Error en el registro: ${exception?.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            Log.d("Erroritos", "Error en el registro: ${exception?.message}")
                         }
-                        .addOnFailureListener {
-                            // Manejar el error si no se pudo guardar en Firestore
-                        }
-                } else {
-                    // Manejar el error si no se pudo crear el usuario
-                }
+                    }
+            } else {
+                // Si algún campo está vacío
+                Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 }
