@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "288463818582",
+    "project_id": "ciclofit-b4d42",
+    "storage_bucket": "ciclofit-b4d42.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288463818582:android:c6cd973d903031e0b390f7",
+        "android_client_info": {
+          "package_name": "com.example.menstruacionnavapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT6S-rCuDk-1oWYqHgCZ7rXm62vX1ISvk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

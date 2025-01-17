@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.gms.google-services")
 }
 android {
 
@@ -57,6 +58,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview.android)
         implementation(libs.gms.play.services.location)
     implementation(libs.androidx.runtime.saved.instance.state)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)
         androidTestImplementation(libs.androidx.espresso.core)
@@ -67,8 +70,10 @@ dependencies {
     implementation("org.maplibre.gl:android-sdk:11.6.1")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-
-
+    implementation ("com.google.firebase:firebase-auth:21.0.1")
+    implementation ("com.google.firebase:firebase-firestore:24.0.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
 
 
 
