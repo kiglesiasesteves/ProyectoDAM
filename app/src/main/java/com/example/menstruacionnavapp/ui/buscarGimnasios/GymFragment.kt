@@ -16,6 +16,7 @@ import com.example.menstruacionnavapp.R
 import com.example.menstruacionnavapp.databinding.FragmentGymsBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -76,19 +77,18 @@ class GymFragment : Fragment() {
         ) {
             googleMap?.isMyLocationEnabled = true
 
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                location?.let {
-                    val userLatLng = LatLng(it.latitude, it.longitude)
-                    googleMap?.addMarker(
-                        MarkerOptions()
-                            .position(userLatLng)
-                            .title("Mi ubicación")
-                    )
-                    googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f))
+            fusedLocationClient.getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY, null
+            ).addOnSuccessListener { location ->
+                if (location != null) {
+                    val userLatLng = LatLng(location.latitude, location.longitude)
+                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f))
                 }
             }
+
         }
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -107,9 +107,9 @@ class GymFragment : Fragment() {
         val boundsBuilder = LatLngBounds.builder()
         val gyms = listOf(
             Triple(LatLng(42.22560424737218, -8.73470873234326), "Synergym Torrecedeira", "<a href='https://synergym.es'>synergym.es</a>"),
-            Triple(LatLng(42.22640424737218, -8.73570873234326), "Gimnasio del Pueblo", "Description"),
-            Triple(LatLng(42.22760424737218, -8.73670873234326), "Con mucha fuerza", "Description"),
-            Triple(LatLng(42.22860424737218, -8.73770873234326), "Gym Alpha", "A modern gym with state-of-the-art equipment")
+            Triple(LatLng(42.231157320095875, -8.713988816439114), "Synergym Pizarro", "Description"),
+            Triple(LatLng(42.23236339173375, -8.713645540064626), "A-SPORT", "Description"),
+            Triple(LatLng(42.17702295077008, -8.713068309677471), "Solidd Studio", "A modern gym with state-of-the-art equipment")
         )
 
         gyms.forEach { (gymLocation, title, description) ->
@@ -127,12 +127,19 @@ class GymFragment : Fragment() {
 
             override fun getInfoContents(marker: Marker): View? {
                 val view = LayoutInflater.from(requireContext()).inflate(R.layout.custom_info_window, null)
+
                 val titleTextView = view.findViewById<TextView>(R.id.title)
                 titleTextView.text = marker.title
+
                 val descriptionTextView = view.findViewById<TextView>(R.id.description)
-                descriptionTextView.text = Html.fromHtml(marker.snippet)
+
+                // Verificar si el snippet es null antes de convertirlo a HTML
+                val snippet = marker.snippet ?: "Sin descripción disponible"
+                descriptionTextView.text = Html.fromHtml(snippet)
+
                 return view
             }
+
         })
     }
 
