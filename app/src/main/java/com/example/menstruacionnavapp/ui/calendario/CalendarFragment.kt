@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.menstruacionnavapp.databinding.FragmentCalendarBinding
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -18,6 +19,7 @@ class CalendarFragment : Fragment() {
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
     private val db = FirebaseFirestore.getInstance() // Instancia de Firestore
+    private val auth = FirebaseAuth.getInstance() // Instancia de Firebase Auth
 
     private var selectedDate: Long = System.currentTimeMillis() // Fecha por defecto (hoy)
 
@@ -47,6 +49,13 @@ class CalendarFragment : Fragment() {
 
         // Acción cuando se presiona el botón "Registrar nuevo período"
         binding.btnRegisterPeriod.setOnClickListener {
+            val userId = auth.currentUser?.uid
+
+            if (userId == null) {
+                Toast.makeText(requireContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (selectedDate > today) {
                 Toast.makeText(requireContext(), "No puedes registrar un período en el futuro", Toast.LENGTH_SHORT).show()
             } else if (selectedDate < sixMonthsAgo) {
@@ -54,8 +63,6 @@ class CalendarFragment : Fragment() {
             } else {
                 val timestamp = Timestamp(Date(selectedDate))
 
-                // Guardar en Firestore (asumiendo que cada usuario tiene su propio documento)
-                val userId = "28yqD9XT8uXReM82wbWtskn5aOA2" // Reemplaza con el ID real del usuario
                 val userRef = db.collection("usuarios").document(userId)
 
                 userRef.update("periodos", FieldValue.arrayUnion(timestamp))
