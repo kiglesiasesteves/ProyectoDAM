@@ -31,7 +31,6 @@ class HomeFragment : Fragment() {
         val button: Button = binding.buttonHome
 
 
-        // 🔹 Agregar funcionalidad para cerrar sesión al presionar el botón
         button.setOnClickListener {
             FirebaseAuth.getInstance().signOut() // Cierra la sesión del usuario actual
             val intent = Intent(requireContext(), RegisterActivity::class.java)

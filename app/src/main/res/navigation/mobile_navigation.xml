@@ -9,7 +9,11 @@
         android:id="@+id/navigation_home"
         android:name="com.example.menstruacionnavapp.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_calendarFragment"
+            app:destination="@id/calendarFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
@@ -38,4 +42,9 @@
         android:name="com.example.menstruacionnavapp.ui.buscarGimnasios.GymFragment"
         android:label="Buscar Gimnasios"
         tools:layout="@layout/fragment_gyms" />
+
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="com.example.menstruacionnavapp.ui.calendario.CalendarFragment"
+        android:label="CalendarFragment" />
 </navigation>
