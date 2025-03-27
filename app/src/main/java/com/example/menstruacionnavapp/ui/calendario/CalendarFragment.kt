@@ -11,17 +11,17 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
 import java.util.*
 
 class CalendarFragment : Fragment() {
 
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
-    private val db = FirebaseFirestore.getInstance() // Instancia de Firestore
-    private val auth = FirebaseAuth.getInstance() // Instancia de Firebase Auth
+    private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
-    private var selectedDate: Long = System.currentTimeMillis() // Fecha por defecto (hoy)
+    private var selectedDate: Long = System.currentTimeMillis()
+    private var duration: Int = 5 // Duración por defecto
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,49 +33,77 @@ class CalendarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        checkIfInPeriod()
 
-        val today = System.currentTimeMillis()
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = today
-        calendar.add(Calendar.MONTH, -6) // Restar 6 meses
-        val sixMonthsAgo = calendar.timeInMillis
-
-        // Capturar la fecha seleccionada en el CalendarView
-        binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            val selectedCalendar = Calendar.getInstance()
-            selectedCalendar.set(year, month, dayOfMonth)
-            selectedDate = selectedCalendar.timeInMillis
-        }
-
-        // Acción cuando se presiona el botón "Registrar nuevo período"
         binding.btnRegisterPeriod.setOnClickListener {
-            val userId = auth.currentUser?.uid
+            registerPeriod()
+        }
+    }
 
-            if (userId == null) {
-                Toast.makeText(requireContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+    private fun registerPeriod() {
+        val userId = auth.currentUser?.uid ?: return
+
+        if (selectedDate > System.currentTimeMillis()) {
+            Toast.makeText(requireContext(), "No puedes registrar un período en el futuro", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val timestamp = Timestamp(Date(selectedDate))
+        val userRef = db.collection("usuarios").document(userId)
+        val periodData = hashMapOf(
+            "inicio" to timestamp,
+            "duracion" to duration
+        )
+
+        userRef.update("periodos", FieldValue.arrayUnion(periodData))
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Período registrado", Toast.LENGTH_SHORT).show()
+                checkIfInPeriod()
             }
+            .addOnFailureListener { e ->
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
 
-            if (selectedDate > today) {
-                Toast.makeText(requireContext(), "No puedes registrar un período en el futuro", Toast.LENGTH_SHORT).show()
-            } else if (selectedDate < sixMonthsAgo) {
-                Toast.makeText(requireContext(), "Solo puedes registrar períodos de los últimos 6 meses", Toast.LENGTH_SHORT).show()
-            } else {
-                val timestamp = Timestamp(Date(selectedDate))
+    private fun checkIfInPeriod() {
+        val userId = auth.currentUser?.uid ?: return
+        val userRef = db.collection("usuarios").document(userId)
+        val today = System.currentTimeMillis()
 
-                val userRef = db.collection("usuarios").document(userId)
+        userRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                val periodos = document.get("periodos") as? List<Map<String, Any>> ?: emptyList()
 
-                userRef.update("periodos", FieldValue.arrayUnion(timestamp))
-                    .addOnSuccessListener {
-                        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                        val formattedDate = dateFormat.format(Date(selectedDate))
-                        Toast.makeText(requireContext(), "Período registrado: $formattedDate", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(requireContext(), "Error al registrar el período: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                val activePeriod = periodos.find { periodo ->
+                    val inicio = (periodo["inicio"] as Timestamp).toDate().time
+                    val duracion = (periodo["duracion"] as Long).toInt()
+                    val fin = inicio + (duracion * 24 * 60 * 60 * 1000)
+                    today in inicio..fin
+                }
+
+                if (activePeriod != null) {
+                    val inicio = (activePeriod["inicio"] as Timestamp).toDate().time
+                    val daysInPeriod = ((today - inicio) / (24 * 60 * 60 * 1000)).toInt() + 1
+                    showPeriodInfo(daysInPeriod)
+                } else {
+                    showNoPeriod()
+                }
             }
         }
+    }
+
+    private fun showPeriodInfo(days: Int) {
+        // Muestra el icono de la gota y la duración en base a las imágenes de los días
+        binding.periodInfoContainer.visibility = View.VISIBLE
+        binding.periodIcon.setImageResource(resources.getIdentifier("gota", "drawable", requireContext().packageName))
+        binding.periodDays.setImageResource(resources.getIdentifier("$days", "drawable", requireContext().packageName))
+        binding.btnRegisterPeriod.isEnabled = false // Desactiva el botón
+    }
+
+    private fun showNoPeriod() {
+        // Si no hay período, se oculta la sección de información y se activa el botón
+        binding.periodInfoContainer.visibility = View.GONE
+        binding.btnRegisterPeriod.isEnabled = true // Activa el botón
     }
 
     override fun onDestroyView() {

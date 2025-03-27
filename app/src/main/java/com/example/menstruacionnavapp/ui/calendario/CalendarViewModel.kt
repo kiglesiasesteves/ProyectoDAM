@@ -9,4 +9,6 @@ class CalendarViewModel : ViewModel() {
     private val _text = MutableLiveData<String>().apply {
     }
     val text: LiveData<String> = _text
+    val txtPeriodoActivo: LiveData<String> = _text
+
 }
