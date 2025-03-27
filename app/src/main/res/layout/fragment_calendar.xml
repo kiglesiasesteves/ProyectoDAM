@@ -8,45 +8,46 @@
 
     <CalendarView
         android:id="@+id/calendarView"
-        android:layout_width="347dp"
-        android:layout_height="366dp"
-        android:layout_margin="16dp"
-        android:layout_marginTop="190dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/btnRegisterPeriod"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
         android:text="Registrar nuevo período"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/calendarView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/calendarView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <ImageView
-        android:id="@+id/periodIcon"
+    <Button
+        android:id="@+id/btnRegisterEndPeriod"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/gota"
+        android:text="Registrar fin de período"
+        android:enabled="false"
         app:layout_constraintTop_toBottomOf="@id/btnRegisterPeriod"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/periodInfoContainer" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <LinearLayout
         android:id="@+id/periodInfoContainer"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/periodIcon"
+        app:layout_constraintTop_toBottomOf="@id/btnRegisterEndPeriod"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/periodIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/gota" />
 
         <ImageView
             android:id="@+id/periodDays"
@@ -54,5 +55,19 @@
             android:layout_height="wrap_content"
             android:src="@drawable/uno" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/lastPeriodInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tu último período ha sido desde: "
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:layout_gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/periodInfoContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.menstruacionnavapp.R
 import com.example.menstruacionnavapp.databinding.FragmentCalendarBinding
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
 import java.util.*
 
 class CalendarFragment : Fragment() {
@@ -19,9 +22,7 @@ class CalendarFragment : Fragment() {
     private val binding get() = _binding!!
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
-
     private var selectedDate: Long = System.currentTimeMillis()
-    private var duration: Int = 5 // Duración por defecto
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,81 +34,231 @@ class CalendarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        checkIfInPeriod()
+
+        val today = System.currentTimeMillis()
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = today
+        calendar.add(Calendar.MONTH, -6)
+        val sixMonthsAgo = calendar.timeInMillis
+
+        binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+            val selectedCalendar = Calendar.getInstance()
+            selectedCalendar.set(year, month, dayOfMonth)
+            selectedDate = selectedCalendar.timeInMillis
+        }
 
         binding.btnRegisterPeriod.setOnClickListener {
-            registerPeriod()
+            val userId = auth.currentUser?.uid ?: run {
+                Toast.makeText(requireContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            when {
+                selectedDate > System.currentTimeMillis() -> {
+                    Toast.makeText(requireContext(), "No puedes registrar un período en el futuro", Toast.LENGTH_SHORT).show()
+                }
+                selectedDate < sixMonthsAgo -> {
+                    Toast.makeText(requireContext(), "Solo puedes registrar períodos de los últimos 6 meses", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    val newPeriodStart = Timestamp(Date(selectedDate))
+
+                    // Primero verificar que no se solape con períodos existentes
+                    db.collection("usuarios").document(userId).get()
+                        .addOnSuccessListener { document ->
+                            if (document.exists()) {
+                                val periodos = document.get("periodos") as? List<Timestamp> ?: emptyList()
+                                val finPeriodos = document.get("finPeriodos") as? List<Timestamp> ?: emptyList()
+
+                                // Verificar solapamiento
+                                if (hasOverlappingPeriod(newPeriodStart, periodos, finPeriodos)) {
+                                    Toast.makeText(requireContext(), "Error: Este período se solapa con otro existente", Toast.LENGTH_LONG).show()
+                                } else {
+                                    // Registrar el nuevo período
+                                    db.collection("usuarios").document(userId)
+                                        .update("periodos", FieldValue.arrayUnion(newPeriodStart))
+                                        .addOnSuccessListener {
+                                            showDateToast("Período registrado")
+                                            checkIfInPeriod()
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Toast.makeText(requireContext(), "Error al registrar: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        }
+                                }
+                            }
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(requireContext(), "Error al verificar períodos", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
         }
+
+        binding.btnRegisterEndPeriod.setOnClickListener {
+            val userId = auth.currentUser?.uid ?: run {
+                Toast.makeText(requireContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val timestamp = Timestamp(Date(selectedDate))
+            db.collection("usuarios").document(userId)
+                .update("finPeriodos", FieldValue.arrayUnion(timestamp))
+                .addOnSuccessListener {
+                    showDateToast("Fin de período registrado")
+                    checkIfInPeriod()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(requireContext(), "Error al registrar fin: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        checkIfInPeriod()
     }
 
-    private fun registerPeriod() {
-        val userId = auth.currentUser?.uid ?: return
-
-        if (selectedDate > System.currentTimeMillis()) {
-            Toast.makeText(requireContext(), "No puedes registrar un período en el futuro", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val timestamp = Timestamp(Date(selectedDate))
-        val userRef = db.collection("usuarios").document(userId)
-        val periodData = hashMapOf(
-            "inicio" to timestamp,
-            "duracion" to duration
-        )
-
-        userRef.update("periodos", FieldValue.arrayUnion(periodData))
-            .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Período registrado", Toast.LENGTH_SHORT).show()
-                checkIfInPeriod()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+    private fun showDateToast(messagePrefix: String) {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val formattedDate = dateFormat.format(Date(selectedDate))
+        Toast.makeText(requireContext(), "$messagePrefix: $formattedDate", Toast.LENGTH_SHORT).show()
     }
 
     private fun checkIfInPeriod() {
         val userId = auth.currentUser?.uid ?: return
-        val userRef = db.collection("usuarios").document(userId)
-        val today = System.currentTimeMillis()
 
-        userRef.get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                val periodos = document.get("periodos") as? List<Map<String, Any>> ?: emptyList()
+        db.collection("usuarios").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val periodos = document.get("periodos") as? List<Timestamp> ?: emptyList()
+                    val finPeriodos = document.get("finPeriodos") as? List<Timestamp> ?: emptyList()
 
-                val activePeriod = periodos.find { periodo ->
-                    val inicio = (periodo["inicio"] as Timestamp).toDate().time
-                    val duracion = (periodo["duracion"] as Long).toInt()
-                    val fin = inicio + (duracion * 24 * 60 * 60 * 1000)
-                    today in inicio..fin
-                }
+                    // Sort both lists chronologically
+                    val sortedStarts = periodos.sortedBy { it.seconds }
+                    val sortedEnds = finPeriodos.sortedBy { it.seconds }
 
-                if (activePeriod != null) {
-                    val inicio = (activePeriod["inicio"] as Timestamp).toDate().time
-                    val daysInPeriod = ((today - inicio) / (24 * 60 * 60 * 1000)).toInt() + 1
-                    showPeriodInfo(daysInPeriod)
-                } else {
-                    showNoPeriod()
+                    val today = Timestamp.now()
+                    var isInPeriod = false
+                    var daysInPeriod = 0
+
+                    // Check if we have more starts than ends (meaning current period is ongoing)
+                    if (sortedStarts.size > sortedEnds.size) {
+                        val lastStart = sortedStarts.last()
+                        if (today >= lastStart) {
+                            isInPeriod = true
+                            daysInPeriod = ((today.seconds - lastStart.seconds) / (24 * 60 * 60)).toInt() + 1
+                        }
+                    }
+
+                    // Also check if today is between any start and end date
+                    for (i in sortedEnds.indices) {
+                        val start = sortedStarts.getOrNull(i) ?: continue
+                        val end = sortedEnds[i]
+                        if (today in start..end) {
+                            isInPeriod = true
+                            daysInPeriod = ((today.seconds - start.seconds) / (24 * 60 * 60)).toInt() + 1
+                            break
+                        }
+                    }
+
+                    if (isInPeriod) {
+                        showPeriodInfo(daysInPeriod)
+                    } else {
+                        showNoPeriod()
+                    }
+
+                    // Update last period info
+                    updateLastPeriodInfo(sortedStarts, sortedEnds, isInPeriod)
                 }
             }
-        }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Error al verificar período", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun showPeriodInfo(days: Int) {
-        // Muestra el icono de la gota y la duración en base a las imágenes de los días
         binding.periodInfoContainer.visibility = View.VISIBLE
-        binding.periodIcon.setImageResource(resources.getIdentifier("gota", "drawable", requireContext().packageName))
-        binding.periodDays.setImageResource(resources.getIdentifier("$days", "drawable", requireContext().packageName))
-        binding.btnRegisterPeriod.isEnabled = false // Desactiva el botón
+
+        // Safer way to get drawable resources
+        val dropIcon = ContextCompat.getDrawable(requireContext(), R.drawable.gota)
+        binding.periodIcon.setImageDrawable(dropIcon)
+
+        // Map days to available number drawables (1-10)
+        val dayResource = when {
+            days in 1..10 -> "number_$days"
+            else -> "number_10" // default to 10 if more than 10
+        }
+
+        val resId = resources.getIdentifier(dayResource, "drawable", requireContext().packageName)
+        if (resId != 0) {
+            binding.periodDays.setImageResource(resId)
+        }
+
+        binding.btnRegisterPeriod.isEnabled = false
+        binding.btnRegisterEndPeriod.isEnabled = true
     }
 
     private fun showNoPeriod() {
-        // Si no hay período, se oculta la sección de información y se activa el botón
         binding.periodInfoContainer.visibility = View.GONE
-        binding.btnRegisterPeriod.isEnabled = true // Activa el botón
+        binding.btnRegisterPeriod.isEnabled = true
+        binding.btnRegisterEndPeriod.isEnabled = false
+    }
+
+    private fun updateLastPeriodInfo(sortedStarts: List<Timestamp>, sortedEnds: List<Timestamp>, isInPeriod: Boolean) {
+        if (sortedStarts.isNotEmpty()) {
+            val lastStart = sortedStarts.last()
+            val lastEnd = if (sortedEnds.size == sortedStarts.size) sortedEnds.last() else null
+
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val startDate = dateFormat.format(lastStart.toDate())
+            val endDate = lastEnd?.let { dateFormat.format(it.toDate()) } ?: "hoy"
+
+            binding.lastPeriodInfo.text = "Tu último período ha sido desde: $startDate hasta: $endDate"
+            binding.lastPeriodInfo.visibility = View.VISIBLE
+        } else {
+            binding.lastPeriodInfo.visibility = View.GONE
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun hasOverlappingPeriod(
+        newStart: Timestamp,
+        existingStarts: List<Timestamp>,
+        existingEnds: List<Timestamp>
+    ): Boolean {
+        // Asumimos que los períodos están ordenados cronológicamente
+        val sortedStarts = existingStarts.sortedBy { it.seconds }
+        val sortedEnds = existingEnds.sortedBy { it.seconds }
+
+        // Caso 1: Hay más inicios que fines (período actual sin terminar)
+        if (sortedStarts.size > sortedEnds.size) {
+            val lastStart = sortedStarts.last()
+            // El nuevo inicio está dentro del período actual sin terminar
+            if (newStart >= lastStart) {
+                return true
+            }
+        }
+
+        // Caso 2: Verificar con todos los períodos completos
+        for (i in sortedEnds.indices) {
+            val start = sortedStarts.getOrNull(i) ?: continue
+            val end = sortedEnds[i]
+
+            // El nuevo inicio está dentro de este período
+            if (newStart in start..end) {
+                return true
+            }
+
+            // El nuevo período incluye este período completo
+            if (i < sortedStarts.size - 1) {
+                val nextStart = sortedStarts[i + 1]
+                if (newStart < end && nextStart > newStart) {
+                    return true
+                }
+            }
+        }
+
+        return false
     }
 }
