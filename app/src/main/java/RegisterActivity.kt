@@ -45,6 +45,24 @@ class RegisterActivity : AppCompatActivity() {
                             if (userId != null) {
                                 db.collection("usuarios").document(userId).set(userData)
                                     .addOnSuccessListener {
+                                        // Enviar correo de verificación
+                                        user?.sendEmailVerification()
+                                            ?.addOnCompleteListener { verificationTask ->
+                                                if (verificationTask.isSuccessful) {
+                                                    Toast.makeText(
+                                                        this,
+                                                        "Correo de verificación enviado.",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                } else {
+                                                    Toast.makeText(
+                                                        this,
+                                                        "Error al enviar el correo de verificación.",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            }
+
                                         Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
                                         val intent = Intent(this, MainActivity::class.java)
                                         startActivity(intent)

@@ -1,13 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.android) version "1.9.0"
     id("com.google.gms.google-services")
-
 }
-android {
 
+android {
     namespace = "com.example.menstruacionnavapp"
-    compileSdk = 35 // Update to compile SDK version 35
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.menstruacionnavapp"
@@ -20,6 +19,7 @@ android {
     }
     buildFeatures {
         dataBinding = true
+        viewBinding = true
     }
 
     buildTypes {
@@ -38,9 +38,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
@@ -57,25 +54,21 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.ui.tooling.preview.android)
-        implementation(libs.gms.play.services.location)
+    implementation(libs.gms.play.services.location)
     implementation(libs.androidx.runtime.saved.instance.state)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
-        androidTestImplementation(libs.androidx.junit)
-        androidTestImplementation(libs.androidx.espresso.core)
-       testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.android.sdk)
     implementation("org.maplibre.gl:android-sdk:11.6.1")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation ("com.google.firebase:firebase-auth:21.0.1")
-    implementation ("com.google.firebase:firebase-firestore:24.0.0")
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
-    implementation("com.google.firebase:firebase-analytics")
-
-
-
+    implementation("com.google.firebase:firebase-auth:1.9.0")
+    implementation("com.google.firebase:firebase-firestore:25.1.3")
+    implementation(platform("com.google.firebase:firebase-bom:32.1.1"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
 }
