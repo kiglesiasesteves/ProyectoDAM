@@ -11,10 +11,15 @@
     <item
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/ic_running_person"
-                android:title="@string/title_notifications" />
+        android:title="@string/title_notifications" />
+    <item
+        android:id="@+id/navigation_gyms"
+        android:icon="@drawable/ic_gym_icon"
+        android:title="@string/gimasios" />
     <item
         android:id="@+id/navigation_premium"
         android:icon="@drawable/ic_premium_icon"
-        android:title="Premium" />
+        android:title="@string/premium" />
+
 />
 </menu>

@@ -23,12 +23,15 @@
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.example.menstruacionnavapp.ui.fitness.FitnessFragment"
+        android:name="com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.GenerarEntrenamientos.EntrenamientoFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_fitness">
         <action
             android:id="@+id/action_fitnessFragment_to_gymsFragment"
             app:destination="@id/navigation_gyms" />
+        <action
+            android:id="@+id/action_fitnessFragment_to_entrenamientoFragment"
+            app:destination="@id/navigation_entrenamiento" />
     </fragment>
 
     <fragment
@@ -39,12 +42,21 @@
 
     <fragment
         android:id="@+id/navigation_gyms"
-        android:name="com.example.menstruacionnavapp.ui.buscarGimnasios.GymFragment"
+        android:name="com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.buscarGimnasios.GymFragment"
         android:label="Buscar Gimnasios"
-        tools:layout="@layout/fragment_gyms" />
+        tools:layout="@layout/fragment_gyms" >
+        <action
+            android:id="@+id/action_navigation_gyms_to_navigation_notifications"
+            app:destination="@id/navigation_notifications" />
+    </fragment>
 
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.example.menstruacionnavapp.ui.calendario.CalendarFragment"
         android:label="CalendarFragment" />
+    <fragment
+        android:id="@+id/navigation_entrenamiento"
+        android:name="com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.GenerarEntrenamientos.EntrenamientoFragment"
+        android:label="Entrenamiento"
+        tools:layout="@layout/fragment_entrenamiento" />
 </navigation>
