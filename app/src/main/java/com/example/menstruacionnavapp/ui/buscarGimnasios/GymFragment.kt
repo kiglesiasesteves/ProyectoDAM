@@ -1,4 +1,4 @@
-package com.example.menstruacionnavapp.ui.buscarGimnasios
+package com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.buscarGimnasios
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -118,7 +118,9 @@ class GymFragment : Fragment() {
                 enableUserLocation()
             }
         }
-    }private fun setupMapMarkers() {
+    }
+
+    private fun setupMapMarkers() {
         // Crea un LatLngBounds.Builder para ajustar la cámara del mapa para que incluya todos los gimnasios.
         val boundsBuilder = LatLngBounds.builder()
 
@@ -170,7 +172,6 @@ class GymFragment : Fragment() {
             }
         })
     }
-
 
     // Método que se llama cuando la vista del fragmento se destruye, para liberar recursos.
     override fun onDestroyView() {

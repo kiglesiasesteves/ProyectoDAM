@@ -1,6 +1,7 @@
 package com.example.menstruacionnavapp.ui.home
 
 import Usuario
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.menstruacionnavapp.databinding.FragmentHomeBinding
+import com.example.menstruacionnavapp.ui.register.RegisterActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.menstruacionnavapp.R
@@ -41,6 +43,16 @@ class HomeFragment : Fragment() {
         user?.let {
             val userId = it.uid
             getPeriodData(userId, periodIcon, daysIcon, anotherIcon, cycleTextView, daysLeftTextView)
+        }
+
+        binding.buttonHome.setOnClickListener {
+            // Sign out the user
+            FirebaseAuth.getInstance().signOut()
+
+            // Redirect to RegisterActivity
+            val intent = Intent(activity, RegisterActivity::class.java)
+            startActivity(intent)
+            activity?.finish() // Finish the current activity
         }
 
         return root

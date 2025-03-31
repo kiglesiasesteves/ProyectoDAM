@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         // Pasar cada ID de menú como un conjunto de IDs porque cada menú debe ser considerado como un destino de nivel superior.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.action_fitnessFragment_to_entrenamientoFragment
             )
         )
 
