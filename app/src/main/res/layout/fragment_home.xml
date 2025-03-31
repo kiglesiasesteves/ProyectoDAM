@@ -34,14 +34,48 @@
             android:src="@drawable/dias"
             android:visibility="gone"
             android:layout_marginStart="8dp" />
+
+        <ImageView
+            android:id="@+id/anotherIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/sangrado"
+            android:visibility="gone"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/cycleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Duración media del ciclo: 0 días"
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/periodDaysLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/daysLeftTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Días hasta el próximo ciclo: 0"
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/cycleTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/buttonRegisterPeriod"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Registrar período"
-        app:layout_constraintTop_toBottomOf="@id/periodDaysLayout"
+        app:layout_constraintTop_toBottomOf="@id/daysLeftTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />

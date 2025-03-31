@@ -1,5 +1,6 @@
 package com.example.menstruacionnavapp.ui.home
 
+import Usuario
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.example.menstruacionnavapp.R
 import com.google.firebase.Timestamp
 import java.util.*
+import kotlin.math.roundToInt
 
 class HomeFragment : Fragment() {
 
@@ -31,59 +33,38 @@ class HomeFragment : Fragment() {
 
         val periodIcon: ImageView = binding.periodIcon
         val daysIcon: ImageView = binding.daysIcon
+        val anotherIcon: ImageView = binding.anotherIcon
+        val cycleTextView: TextView = binding.cycleTextView
+        val daysLeftTextView: TextView = binding.daysLeftTextView
 
-        // Obtener el usuario actual
         val user = FirebaseAuth.getInstance().currentUser
         user?.let {
             val userId = it.uid
-            getPeriodData(userId, periodIcon, daysIcon)
+            getPeriodData(userId, periodIcon, daysIcon, anotherIcon, cycleTextView, daysLeftTextView)
         }
 
         return root
     }
 
-    private fun getPeriodData(userId: String, periodIcon: ImageView, daysIcon: ImageView) {
-        Log.d("HomeFragment", "Fetching period data for user: $userId")
+    private fun getPeriodData(
+        userId: String,
+        periodIcon: ImageView,
+        daysIcon: ImageView,
+        anotherIcon: ImageView,
+        cycleTextView: TextView,
+        daysLeftTextView: TextView
+    ) {
         db.collection("usuarios").document(userId)
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    Log.d("HomeFragment", "Document exists for user: $userId")
                     val periodos = document.get("periodos") as? List<Timestamp> ?: emptyList()
                     val finPeriodos = document.get("finPeriodos") as? List<Timestamp> ?: emptyList()
-                    Log.d("HomeFragment", "Periodos: $periodos")
-                    Log.d("HomeFragment", "FinPeriodos: $finPeriodos")
 
-                    if (periodos.isNotEmpty()) {
-                        val lastStartPeriod = periodos.last() // Última fecha de inicio del período
-                        Log.d("HomeFragment", "Last start period: $lastStartPeriod")
-
-                        // Si hay menos elementos en finPeriodos que en Periodos, significa que el último período no ha finalizado
-                        val periodoEnCurso = finPeriodos.size < periodos.size
-                        Log.d("HomeFragment", "Periodo en curso: $periodoEnCurso")
-
-                        val diasEnCurso = if (periodoEnCurso) {
-                            // Si el período está en curso, calcular los días desde la última fecha de inicio hasta hoy
-                            val inicioDate = lastStartPeriod.toDate()
-                            val today = Calendar.getInstance().time
-                            val days = ((today.time - inicioDate.time) / (1000 * 60 * 60 * 24)).toInt()
-                            Log.d("HomeFragment", "Inicio date: $inicioDate")
-                            Log.d("HomeFragment", "Today: $today")
-                            Log.d("HomeFragment", "Days in period: $days")
-                            days
-                        } else {
-                            Log.d("HomeFragment", "No active period")
-                            0
-                        }
-
-                        // Actualizar la UI
-                        updateUI(diasEnCurso, periodIcon, daysIcon)
-                    } else {
-                        Log.d("HomeFragment", "No periods found")
-                        updateUI(0, periodIcon, daysIcon)
+                    if (periodos.isNotEmpty() && finPeriodos.isNotEmpty()) {
+                        val usuario = calcularUsuario(periodos.map { it.toDate() }, finPeriodos.map { it.toDate() })
+                        updateUI(usuario, periodIcon, daysIcon, anotherIcon, cycleTextView, daysLeftTextView)
                     }
-                } else {
-                    Log.d("HomeFragment", "Document does not exist for user: $userId")
                 }
             }
             .addOnFailureListener { e ->
@@ -91,25 +72,56 @@ class HomeFragment : Fragment() {
             }
     }
 
-    private fun updateUI(dias: Int, periodIcon: ImageView, daysIcon: ImageView) {
-        if (dias > 0) {
-            val imageName = when (dias) {
-                1 -> "uno"
-                2 -> "dos"
-                3 -> "tres"
-                4 -> "cuatro"
-                5 -> "cinco"
-                else -> "cinco" // Si pasa de 5, usar cinco.png
-            }
+    private fun calcularUsuario(periodos: List<Date>, finPeriodos: List<Date>): Usuario {
+        val ciclos = mutableListOf<Int>()
+        val sangrados = mutableListOf<Int>()
+
+        for (i in 1 until periodos.size) {
+            val diasCiclo = ((periodos[i].time - periodos[i - 1].time) / (1000 * 60 * 60 * 24)).toInt()
+            ciclos.add(diasCiclo)
+        }
+
+        for (i in finPeriodos.indices) {
+            val diasSangrado = ((finPeriodos[i].time - periodos[i].time) / (1000 * 60 * 60 * 24)).toInt()
+            sangrados.add(diasSangrado)
+        }
+
+        val promedioCiclo = if (ciclos.isNotEmpty()) ciclos.average().roundToInt() else 28
+        val promedioSangrado = if (sangrados.isNotEmpty()) sangrados.average().roundToInt() else 5
+
+        val ultimoInicio = periodos.last()
+        val proximoInicioEstimado = Calendar.getInstance().apply {
+            time = ultimoInicio
+            add(Calendar.DAY_OF_MONTH, promedioCiclo)
+        }.time
+
+        val diasParaSiguiente = ((proximoInicioEstimado.time - Date().time) / (1000 * 60 * 60 * 24)).toInt()
+
+        return Usuario(promedioCiclo, diasParaSiguiente, promedioSangrado, periodos, finPeriodos)
+    }
+
+    private fun updateUI(
+        usuario: Usuario,
+        periodIcon: ImageView,
+        daysIcon: ImageView,
+        anotherIcon: ImageView,
+        cycleTextView: TextView,
+        daysLeftTextView: TextView
+    ) {
+        cycleTextView.text = "Duración media del ciclo: ${usuario.promedioCiclo} días"
+        daysLeftTextView.text = "Días hasta el próximo ciclo: ${usuario.diasParaSiguiente}"
+
+        if (usuario.diasParaSiguiente in 1..5) {
+            val imageName = listOf("uno", "dos", "tres", "cuatro", "cinco")[usuario.diasParaSiguiente - 1]
             val imageResId = resources.getIdentifier(imageName, "drawable", requireContext().packageName)
             periodIcon.setImageResource(imageResId)
-            periodIcon.visibility = View.VISIBLE
-            daysIcon.visibility = View.VISIBLE
         } else {
             periodIcon.setImageResource(R.drawable.cero)
-            periodIcon.visibility = View.VISIBLE
-            daysIcon.visibility = View.GONE
         }
+
+        periodIcon.visibility = View.VISIBLE
+        daysIcon.visibility = View.VISIBLE
+        anotherIcon.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {
