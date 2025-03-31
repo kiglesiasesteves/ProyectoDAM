@@ -64,9 +64,20 @@ class RegisterActivity : AppCompatActivity() {
                                             }
 
                                         Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                                        val intent = Intent(this, MainActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
+
+                                        // Verificar si el correo ha sido verificado antes de proceder
+                                        if (user?.isEmailVerified == true) {
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            startActivity(intent)
+                                            finish()
+                                        } else {
+                                            // Si el correo no está verificado, muestra un mensaje y no deja continuar
+                                            Toast.makeText(
+                                                this,
+                                                "Por favor, verifica tu correo electrónico antes de acceder.",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
                                     }
                                     .addOnFailureListener { firestoreException ->
                                         Toast.makeText(
