@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.menstruacionnavapp.MainActivity
 import com.example.menstruacionnavapp.databinding.ActivityRegisterBinding
+import com.example.menstruacionnavapp.ui.login.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -21,15 +22,13 @@ class RegisterActivity : AppCompatActivity() {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Función de registro
         binding.btnRegister.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
-            val name = binding.etName.text.toString()  // Nombre del usuario
-            val username = binding.etUsername.text.toString()  // Nombre de usuario (nuevo campo)
+            val name = binding.etName.text.toString()
+            val username = binding.etUsername.text.toString()
 
             if (email.isNotEmpty() && password.isNotEmpty() && name.isNotEmpty() && username.isNotEmpty()) {
-                // Crear usuario en Firebase Authentication
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
@@ -37,15 +36,14 @@ class RegisterActivity : AppCompatActivity() {
                             val userId = user?.uid
                             val userData = hashMapOf(
                                 "nombre" to name,
-                                "nombreUsuario" to username,  // Guardar nombre de usuario
+                                "nombreUsuario" to username,
                                 "email" to email,
-                                "contrasenha" to password  // Guardar la contraseña (aunque normalmente se recomienda no guardar la contraseña en texto plano)
+                                "contrasenha" to password
                             )
 
                             if (userId != null) {
                                 db.collection("usuarios").document(userId).set(userData)
                                     .addOnSuccessListener {
-                                        // Enviar correo de verificación
                                         user?.sendEmailVerification()
                                             ?.addOnCompleteListener { verificationTask ->
                                                 if (verificationTask.isSuccessful) {
@@ -65,19 +63,9 @@ class RegisterActivity : AppCompatActivity() {
 
                                         Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
 
-                                        // Verificar si el correo ha sido verificado antes de proceder
-                                        if (user?.isEmailVerified == true) {
-                                            val intent = Intent(this, MainActivity::class.java)
-                                            startActivity(intent)
-                                            finish()
-                                        } else {
-                                            // Si el correo no está verificado, muestra un mensaje y no deja continuar
-                                            Toast.makeText(
-                                                this,
-                                                "Por favor, verifica tu correo electrónico antes de acceder.",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
+                                        val intent = Intent(this, LoginActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
                                     }
                                     .addOnFailureListener { firestoreException ->
                                         Toast.makeText(
@@ -88,7 +76,6 @@ class RegisterActivity : AppCompatActivity() {
                                     }
                             }
                         } else {
-                            // Si falla el registro en Firebase Authentication, obtenemos más detalles
                             val exception = task.exception
                             Toast.makeText(
                                 this,
@@ -99,7 +86,6 @@ class RegisterActivity : AppCompatActivity() {
                         }
                     }
             } else {
-                // Si algún campo está vacío
                 Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show()
             }
         }

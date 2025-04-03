@@ -21,11 +21,10 @@
         android:textSize="16sp"
         android:layout_marginTop="8dp" />
 
-    <VideoView
-        android:id="@+id/videoView"
+    <WebView
+        android:id="@+id/webView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_gravity="center" />
+        android:layout_height="200dp"/>
+
 
 </LinearLayout>
