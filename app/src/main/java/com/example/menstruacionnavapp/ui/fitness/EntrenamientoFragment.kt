@@ -5,23 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
-import android.webkit.WebView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.menstruacionnavapp.controller.MenstrualCycleController
 import com.example.menstruacionnavapp.databinding.FragmentFitnessBinding
 import com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.model.EntornoEntrenamiento
 import com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.model.FaseCiclo
+import com.google.firebase.auth.FirebaseAuth
 
 class EntrenamientoFragment : Fragment() {
 
     private var _binding: FragmentFitnessBinding? = null
     private val binding get() = _binding!!
     private lateinit var trainingViewModel: TrainingViewModel
+    private lateinit var menstrualCycleController: MenstrualCycleController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentFitnessBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -29,14 +31,31 @@ class EntrenamientoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        trainingViewModel = ViewModelProvider(this).get(TrainingViewModel::class.java)
+        trainingViewModel = ViewModelProvider(this)[TrainingViewModel::class.java]
+
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        menstrualCycleController = MenstrualCycleController(userId)
+
+        menstrualCycleController.obtenerFaseActual { faseStr ->
+            faseStr?.let {
+                val faseActual = convertirAFaseCiclo(it)
+                trainingViewModel.generarEntrenamiento(faseActual)
+            }
+        }
 
         trainingViewModel.entrenamiento.observe(viewLifecycleOwner) { entrenamiento ->
             actualizarUI(entrenamiento)
         }
+    }
 
-        val faseActual = obtenerFaseActual()
-        trainingViewModel.generarEntrenamiento(faseActual)
+    private fun convertirAFaseCiclo(fase: String): FaseCiclo {
+        return when (fase) {
+            "Menstruación" -> FaseCiclo.MENSTRUAL
+            "Fase Folicular" -> FaseCiclo.FOLICULAR
+            "Ovulación" -> FaseCiclo.OVULATORIA
+            "Fase Lútea" -> FaseCiclo.LUTEA
+            else -> FaseCiclo.FOLICULAR
+        }
     }
 
     private fun actualizarUI(entrenamiento: EntornoEntrenamiento) {
@@ -64,10 +83,6 @@ class EntrenamientoFragment : Fragment() {
 
     private fun obtenerIdYoutube(url: String): String {
         return url.substringAfter("watch?v=").substringBefore("&")
-    }
-
-    private fun obtenerFaseActual(): FaseCiclo {
-        return FaseCiclo.OVULATORIA
     }
 
     override fun onDestroyView() {
