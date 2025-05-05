@@ -30,6 +30,8 @@
             android:label="Register">
         </activity>
 
+        <activity android:name=".ui.questionnaire.QuestionnaireActivity" />
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

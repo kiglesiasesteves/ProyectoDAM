@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.menstruacionnavapp.ui.questionnaire.QuestionnaireActivity">
+
+    <TextView
+        android:id="@+id/tvQuestion1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="¿Cuándo fue tu último periodo?"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp" />
+
+    <EditText
+        android:id="@+id/etLastPeriod"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Fecha (dd/mm/aaaa)"
+        android:focusable="false"
+        android:clickable="true"
+        android:inputType="none"
+        android:importantForAutofill="no"
+        android:autofillHints=""
+        app:layout_constraintTop_toBottomOf="@id/tvQuestion1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvQuestion2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="¿Cuánto duran tus periodos en promedio?"
+        app:layout_constraintTop_toBottomOf="@id/etLastPeriod"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/etPeriodDuration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Duración en días"
+        android:inputType="number"
+        android:importantForAutofill="no"
+        android:autofillHints=""
+        app:layout_constraintTop_toBottomOf="@id/tvQuestion2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guardar"
+        app:layout_constraintTop_toBottomOf="@id/etPeriodDuration"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
