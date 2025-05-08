@@ -8,14 +8,36 @@
     tools:context="com.example.menstruacionnavapp.ui.questionnaire.QuestionnaireActivity">
 
     <TextView
-        android:id="@+id/tvQuestion1"
+        android:id="@+id/tvQuestionBirthDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="¿Cuándo fue tu último periodo?"
+        android:text="¿Cuál es tu fecha de nacimiento?"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
+
+    <EditText
+        android:id="@+id/etBirthDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Fecha (dd/mm/aaaa)"
+        android:inputType="date"
+        android:importantForAutofill="no"
+        android:autofillHints=""
+        app:layout_constraintTop_toBottomOf="@id/tvQuestionBirthDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvQuestion1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="¿Cuándo fue tu último periodo?"
+        app:layout_constraintTop_toBottomOf="@id/etBirthDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
 
     <EditText
         android:id="@+id/etLastPeriod"
@@ -53,12 +75,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <TextView
+        android:id="@+id/tvQuestionPurpose"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="¿Para qué quieres usar la aplicación?"
+        app:layout_constraintTop_toBottomOf="@id/etPeriodDuration"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <CheckBox
+        android:id="@+id/cbPregnancy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Embarazo"
+        app:layout_constraintTop_toBottomOf="@id/tvQuestionPurpose"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbSport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Deporte"
+        app:layout_constraintTop_toBottomOf="@id/cbPregnancy"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbPrediction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Previsión"
+        app:layout_constraintTop_toBottomOf="@id/cbSport"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp" />
+
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Guardar"
-        app:layout_constraintTop_toBottomOf="@id/etPeriodDuration"
+        app:layout_constraintTop_toBottomOf="@id/cbPrediction"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
