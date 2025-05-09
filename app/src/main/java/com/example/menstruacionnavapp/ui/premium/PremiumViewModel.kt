@@ -3,7 +3,7 @@ package com.example.menstruacionnavapp.ui.premium
 import android.app.Activity
 import android.content.Intent
 import androidx.lifecycle.ViewModel
-import com.example.menstruacionnavapp.MainActivity
+import com.example.menstruacionnavapp.util.PayPalHelper
 import com.paypal.android.sdk.payments.PaymentActivity
 import com.paypal.android.sdk.payments.PaymentConfirmation
 import com.paypal.android.sdk.payments.PayPalPayment
@@ -19,7 +19,7 @@ class PremiumViewModel : ViewModel() {
         )
 
         val intent = Intent(activity, PaymentActivity::class.java)
-        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, MainActivity.config)
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PayPalHelper.config)
         intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment)
         activity.startActivityForResult(intent, 123)
     }
