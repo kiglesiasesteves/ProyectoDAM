@@ -34,9 +34,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/playfair_display_black"
-            android:textColor="@android:color/black"
-            android:textSize="26sp"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,36 +59,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="• Acceso a estadísticas detalladas para un mejor seguimiento de tu ciclo."
-                android:textSize="20sp"
-                android:fontFamily="@font/playfair_display_black"
-                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:gravity="center"
                 android:paddingBottom="32dp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="• Entrenamientos personalizados adaptados a tus necesidades."
-                android:textSize="20sp"
-                android:fontFamily="@font/playfair_display_black"
-                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:gravity="center"
                 android:paddingBottom="32dp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="• Experiencia sin anuncios para una navegación más cómoda."
-                android:textSize="20sp"
-                android:fontFamily="@font/playfair_display_black"
-                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:gravity="center"
                 android:paddingBottom="32dp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="• Todo esto únicamente por 3€/mes y el primer mes es totalmente gratuito."
-                android:textSize="20sp"
-                android:fontFamily="@font/playfair_display_black"
-                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:gravity="center"
                 android:paddingBottom="32dp"/>
         </LinearLayout>
 

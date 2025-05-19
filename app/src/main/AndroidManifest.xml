@@ -53,6 +53,22 @@
             </intent-filter>
         </activity>
 
+        <!-- Actividades de PayPal -->
+        <activity
+            android:name="com.paypal.android.sdk.payments.PaymentActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
+            android:name="com.paypal.android.sdk.payments.LoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
+            android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
+            android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <service android:name="com.paypal.android.sdk.payments.PayPalService"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA5_7LFUrNB9ZhPpBh37pq-yRMtgZlgLTY"/>

@@ -64,6 +64,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.android.sdk)
     implementation("org.maplibre.gl:android-sdk:11.6.1")
+    implementation ("com.paypal.sdk:paypal-android-sdk:2.16.0")
     implementation(libs.play.services.maps)
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.firebase:firebase-auth:1.9.0")

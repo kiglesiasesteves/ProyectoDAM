@@ -68,7 +68,6 @@ class HomeFragment : Fragment() {
 
         binding.buttonHome.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
-            // Cambio aquí: redireccionar a MainActivity en lugar de RegisterActivity
             val intent = Intent(activity, MainActivity::class.java)
             startActivity(intent)
             activity?.finish()
@@ -82,7 +81,7 @@ class HomeFragment : Fragment() {
         periodIcon: ImageView,
         cycleTextView: TextView
     ) {
-        MenstrualCycleController(userId).obtenerFaseActual { fase ->
+        MenstrualCycleController(userId).obtenerFaseActual { fase -> 
             fase?.let {
                 updateUI(userId, it, periodIcon, cycleTextView)
             } ?: Log.d("HomeFragment", "No se pudo obtener la fase actual.")
@@ -95,11 +94,11 @@ class HomeFragment : Fragment() {
         periodIcon: ImageView,
         cycleTextView: TextView
     ) {
-        MenstrualCycleController(userId).obtenerFases { fases ->
+        MenstrualCycleController(userId).obtenerFases { fases -> 
             fases?.let {
                 val hoy = Date()
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                val detallesFases = it.entries.joinToString("\n") { (nombreFase, fechaInicio) ->
+                val detallesFases = it.entries.joinToString("\n") { (nombreFase, fechaInicio) -> 
                     val diasRestantes = ((fechaInicio.time - hoy.time) / (1000 * 60 * 60 * 24)).toInt()
                     "$nombreFase: empieza en $diasRestantes días (el ${dateFormat.format(fechaInicio)})"
                 }
@@ -113,7 +112,7 @@ class HomeFragment : Fragment() {
     private fun generarInforme(userId: String) {
         val context = requireContext()
         val generarInforme = GenerarInforme(userId, context)
-        generarInforme.generarInforme { informe ->
+        generarInforme.generarInforme { informe -> 
             Log.d("HomeFragment", "Informe generado:\n$informe")
             this.informeContenido = informe
 
