@@ -1,37 +1,41 @@
 package com.example.menstruacionnavapp.ui.premium
 
+import android.app.Activity
 import android.content.Intent
-import android.net.Uri
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
-
+import com.example.menstruacionnavapp.util.PayPalHelper
+import com.paypal.android.sdk.payments.PaymentActivity
+import com.paypal.android.sdk.payments.PaymentConfirmation
+import com.paypal.android.sdk.payments.PayPalPayment
+import com.paypal.android.sdk.payments.PayPalService
+import java.math.BigDecimal
 
 class PremiumViewModel : ViewModel() {
 
+    fun onButtonClick(activity: Activity) {
+        val payment = PayPalPayment(
+            BigDecimal("9.99"), "EUR", "CicloFit Premium",
+            PayPalPayment.PAYMENT_INTENT_SALE
+        )
 
-    fun onButtonClick() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com"))
-   //función modificable
+        val intent = Intent(activity, PaymentActivity::class.java)
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, PayPalHelper.config)
+        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment)
+        activity.startActivityForResult(intent, 123)
+    }
+
+    fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 123) {
+            if (resultCode == Activity.RESULT_OK) {
+                val confirm: PaymentConfirmation? = data?.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION)
+                if (confirm != null) {
+                    // Manejar la confirmación del pago
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // El usuario canceló el pago
+            } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+                // Pago inválido
+            }
+        }
     }
 }
