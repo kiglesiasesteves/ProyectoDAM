@@ -45,6 +45,7 @@ class RegisterActivity : AppCompatActivity() {
                             if (userId != null) {
                                 db.collection("usuarios").document(userId).set(userData)
                                     .addOnSuccessListener {
+                                        val user = auth.currentUser
                                         user?.sendEmailVerification()
                                             ?.addOnCompleteListener { verificationTask ->
                                                 if (verificationTask.isSuccessful) {
@@ -63,9 +64,8 @@ class RegisterActivity : AppCompatActivity() {
                                             }
 
                                         Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                                        // Redireccionar al cuestionario después del registro exitoso
                                         val intent = Intent(this, QuestionnaireActivity::class.java)
-
-                                        val intent = Intent(this, LoginActivity::class.java)
                                         startActivity(intent)
                                         finish()
                                     }

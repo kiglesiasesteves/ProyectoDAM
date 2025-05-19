@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.menstruacionnavapp.MainActivity
+import com.example.menstruacionnavapp.AppActivity
 import com.example.menstruacionnavapp.databinding.ActivityQuestionnaireBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -154,7 +154,8 @@ class QuestionnaireActivity : AppCompatActivity() {
                     db.collection("usuarios").document(userId).set(questionnaireData, SetOptions.merge())
                         .addOnSuccessListener {
                             Toast.makeText(this, "Datos guardados correctamente", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this, MainActivity::class.java)
+                            // Redireccionar a AppActivity después de guardar el cuestionario
+                            val intent = Intent(this, AppActivity::class.java)
                             startActivity(intent)
                             finish()
                         }

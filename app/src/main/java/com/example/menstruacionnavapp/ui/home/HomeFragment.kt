@@ -12,7 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.menstruacionnavapp.databinding.FragmentHomeBinding
-import com.example.menstruacionnavapp.ui.register.RegisterActivity
+import com.example.menstruacionnavapp.MainActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.example.menstruacionnavapp.controller.GenerarInforme
 import com.example.menstruacionnavapp.controller.MenstrualCycleController
@@ -68,7 +68,8 @@ class HomeFragment : Fragment() {
 
         binding.buttonHome.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
-            val intent = Intent(activity, RegisterActivity::class.java)
+            // Cambio aquí: redireccionar a MainActivity en lugar de RegisterActivity
+            val intent = Intent(activity, MainActivity::class.java)
             startActivity(intent)
             activity?.finish()
         }
