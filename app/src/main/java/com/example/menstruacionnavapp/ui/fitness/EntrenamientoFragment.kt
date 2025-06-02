@@ -1,4 +1,4 @@
-package com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.GenerarEntrenamientos
+package com.example.menstruacionnavapp.ui.fitness
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.menstruacionnavapp.controller.MenstrualCycleController
 import com.example.menstruacionnavapp.databinding.FragmentFitnessBinding
-import com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.model.EntornoEntrenamiento
-import com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.model.FaseCiclo
+import com.example.menstruacionnavapp.model.EntornoEntrenamiento
+import com.example.menstruacionnavapp.model.FaseCiclo
 import com.google.firebase.auth.FirebaseAuth
 
 class EntrenamientoFragment : Fragment() {
@@ -67,7 +67,7 @@ class EntrenamientoFragment : Fragment() {
             val iframeHtml = """
                 <html>
                 <body style="margin:0;padding:0;">
-                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/$videoId" 
+                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/$videoId"
                     frameborder="0" allowfullscreen></iframe>
                 </body>
                 </html>
@@ -90,3 +90,4 @@ class EntrenamientoFragment : Fragment() {
         _binding = null
     }
 }
+

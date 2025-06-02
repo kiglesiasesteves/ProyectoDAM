@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.GenerarEntrenamientos.EntrenamientoFragment"
+        android:name="com.example.menstruacionnavapp.ui.fitness.EntrenamientoFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_fitness">
         <action
@@ -42,7 +42,7 @@
 
     <fragment
         android:id="@+id/navigation_gyms"
-        android:name="com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.buscarGimnasios.GymFragment"
+        android:name="com.example.menstruacionnavapp.ui.buscarGimnasios.GymFragment"
         android:label="Buscar Gimnasios"
         tools:layout="@layout/fragment_gyms" >
         <action
@@ -56,7 +56,8 @@
         android:label="CalendarFragment" />
     <fragment
         android:id="@+id/navigation_entrenamiento"
-        android:name="com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.GenerarEntrenamientos.EntrenamientoFragment"
+        android:name="com.example.menstruacionnavapp.ui.fitness.EntrenamientoFragment"
         android:label="Entrenamiento"
-        tools:layout="@layout/fragment_entrenamiento" />
+        tools:layout="@layout/fragment_fitness" />
 </navigation>
+

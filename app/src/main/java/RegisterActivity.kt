@@ -1,4 +1,4 @@
-package com.example.menstruacionnavapp.ui.register
+package com
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.menstruacionnavapp.MainActivity
 import com.example.menstruacionnavapp.databinding.ActivityRegisterBinding
 import com.example.menstruacionnavapp.ui.questionnaire.QuestionnaireActivity
-import com.example.menstruacionnavapp.ui.login.LoginActivity
+import com.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 

@@ -14,10 +14,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.text.Editable
 import android.text.TextWatcher
-import java.time.LocalDate
-import java.time.Period
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 class QuestionnaireActivity : AppCompatActivity() {
 
@@ -171,11 +167,17 @@ class QuestionnaireActivity : AppCompatActivity() {
 
     private fun calculateAge(birthDate: String): Int? {
         return try {
-            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            val date = LocalDate.parse(birthDate, formatter)
-            val today = LocalDate.now()
-            Period.between(date, today).years
-        } catch (e: DateTimeParseException) {
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val birthDateParsed = dateFormat.parse(birthDate) ?: return null
+            val today = Calendar.getInstance()
+            val birthCalendar = Calendar.getInstance().apply { time = birthDateParsed }
+
+            var age = today.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR)
+            if (today.get(Calendar.DAY_OF_YEAR) < birthCalendar.get(Calendar.DAY_OF_YEAR)) {
+                age--
+            }
+            age
+        } catch (e: Exception) {
             null
         }
     }

@@ -9,7 +9,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.menstruacionnavapp.databinding.ActivityAppBinding
-import com.example.menstruacionnavapp.ui.register.RegisterActivity
+import com.RegisterActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.FirebaseApp
 
@@ -47,7 +47,8 @@ class AppActivity : AppCompatActivity() {
         // Pasar cada ID de menú como un conjunto de IDs porque cada menú debe ser considerado como un destino de nivel superior.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.action_fitnessFragment_to_entrenamientoFragment
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications,
+                R.id.navigation_gyms, R.id.navigation_premium
             )
         )
 

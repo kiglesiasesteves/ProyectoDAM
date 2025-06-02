@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.buscarGimnasios.GymViewModel" />
+        <import type="com.example.menstruacionnavapp.ui.buscarGimnasios.GymViewModel" />
         <variable
             name="viewModel"
-            type="com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.buscarGimnasios.GymViewModel" />
+            type="com.example.menstruacionnavapp.ui.buscarGimnasios.GymViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

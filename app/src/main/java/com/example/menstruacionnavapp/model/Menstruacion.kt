@@ -1,4 +1,4 @@
-package com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.model
+package com.example.menstruacionnavapp.model
 
 import java.util.Date
 

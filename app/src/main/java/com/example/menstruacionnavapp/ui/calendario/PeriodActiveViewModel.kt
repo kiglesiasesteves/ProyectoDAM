@@ -1,4 +1,4 @@
-package com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.calendario
+package com.example.menstruacionnavapp.ui.calendario
 
 import androidx.lifecycle.ViewModel
 

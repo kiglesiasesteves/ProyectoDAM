@@ -1,11 +1,11 @@
-package com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.GenerarEntrenamientos
+package com.example.menstruacionnavapp.ui.fitness
 
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.model.EntornoEntrenamiento
-import com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.model.FaseCiclo
+import com.example.menstruacionnavapp.model.EntornoEntrenamiento
+import com.example.menstruacionnavapp.model.FaseCiclo
 
 
 class TrainingViewModel : ViewModel() {

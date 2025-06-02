@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.menstruacionnavapp.databinding.ActivityMainBinding
-import com.example.menstruacionnavapp.ui.login.LoginActivity
-import com.example.menstruacionnavapp.ui.register.RegisterActivity
+import com.LoginActivity
+import com.RegisterActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {

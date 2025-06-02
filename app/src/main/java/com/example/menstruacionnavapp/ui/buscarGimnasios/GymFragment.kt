@@ -1,4 +1,4 @@
-package com.example.menstruacionnavapp.ui.register.com.example.menstruacionnavapp.ui.buscarGimnasios
+package com.example.menstruacionnavapp.ui.buscarGimnasios
 
 import android.Manifest
 import android.content.pm.PackageManager
