@@ -19,6 +19,7 @@ import com.example.menstruacionnavapp.controller.MenstrualCycleController
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.max
 
 class HomeFragment : Fragment() {
 
@@ -99,8 +100,13 @@ class HomeFragment : Fragment() {
                 val hoy = Date()
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 val detallesFases = it.entries.joinToString("\n") { (nombreFase, fechaInicio) -> 
-                    val diasRestantes = ((fechaInicio.time - hoy.time) / (1000 * 60 * 60 * 24)).toInt()
-                    "$nombreFase: empieza en $diasRestantes días (el ${dateFormat.format(fechaInicio)})"
+                    val diasRestantes = max(0, ((fechaInicio.time - hoy.time) / (1000 * 60 * 60 * 24)).toInt())
+
+                    if (fechaInicio.time <= hoy.time) {
+                        "$nombreFase: fase actual (comenzó el ${dateFormat.format(fechaInicio)})"
+                    } else {
+                        "$nombreFase: empieza en $diasRestantes días (el ${dateFormat.format(fechaInicio)})"
+                    }
                 }
 
                 cycleTextView.text = "Fase actual: $fase\n\nDetalles de las fases:\n$detallesFases"

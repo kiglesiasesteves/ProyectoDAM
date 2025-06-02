@@ -4,6 +4,8 @@ import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 class MenstrualCycleController(private val userId: String) {
@@ -18,7 +20,7 @@ class MenstrualCycleController(private val userId: String) {
 
                     Log.d("MenstrualCycleController", "Document exists. Periodos: $periodos, FinPeriodos: $finPeriodos")
 
-                    if (periodos.size > 1) {
+                    if (periodos.isNotEmpty()) {
                         val medias = calcularMedias(periodos, finPeriodos)
                         val fases = calcularFases(periodos.last().toDate(), medias.first, medias.second)
                         Log.d("MenstrualCycleController", "Fases calculadas: $fases")
@@ -48,64 +50,86 @@ class MenstrualCycleController(private val userId: String) {
                     Log.d("MenstrualCycleController", "Periodos: $periodos")
                     Log.d("MenstrualCycleController", "FinPeriodos: $finPeriodos")
 
-                    if (periodos.isNotEmpty() && finPeriodos.isNotEmpty()) {
-                        val hoy = Date()
+                    if (periodos.isEmpty()) {
+                        callback(null)
+                        return@addOnSuccessListener
+                    }
 
-                        val periodosArray = periodos.map { it.toDate() }.toTypedArray()
-                        val finPeriodosArray = finPeriodos.map { it.toDate() }.toTypedArray()
+                    val hoy = Date()
 
-                        if (periodosArray.isNotEmpty() && finPeriodosArray.isNotEmpty()) {
-                            val ultimoInicio = periodosArray.last()
-                            val ultimoFin = finPeriodosArray.lastOrNull() ?: return@addOnSuccessListener
+                    // Ordenar periodos y finPeriodos cronológicamente
+                    val periodosOrdenados = periodos.map { it.toDate() }.sortedBy { it.time }
+                    val finPeriodosOrdenados = finPeriodos.map { it.toDate() }.sortedBy { it.time }
 
-                            if (ultimoFin.before(ultimoInicio)) {
-                                Log.d("MenstrualCycleController", "Verificando período menstrual: inicio = $ultimoInicio, fin = $ultimoFin, hoy = $hoy")
-                                    Log.d("MenstrualCycleController", "Fase actual: Menstruación")
-                                    callback("Menstruación")
-                                    return@addOnSuccessListener
-
-                            } else {
-                                Log.d("MenstrualCycleController", "El último fin es antes del último inicio, no es un período válido.")
-                            }
+                    // Verificar si estamos en un periodo activo (inicio registrado sin fin)
+                    if (periodosOrdenados.size > finPeriodosOrdenados.size) {
+                        val ultimoInicio = periodosOrdenados.last()
+                        if (hoy.time >= ultimoInicio.time) {
+                            Log.d("MenstrualCycleController", "Fase actual: Menstruación (periodo activo)")
+                            callback("Menstruación")
+                            return@addOnSuccessListener
                         }
+                    }
 
-                        if (periodos.size > 1) {
-                            val medias = calcularMedias(periodos, finPeriodos)
-                            val fases = calcularFases(periodos.last().toDate(), medias.first, medias.second)
+                    // Verificar si estamos entre un inicio y fin de periodo
+                    for (i in finPeriodosOrdenados.indices) {
+                        val inicio = periodosOrdenados.getOrNull(i) ?: continue
+                        val fin = finPeriodosOrdenados[i]
 
-                            // Verificar en qué fase estamos
-                            val fechas = listOf(
-                                "Fase Folicular" to fases["Fase Folicular"],
-                                "Ovulación" to fases["Ovulación"],
-                                "Fase Lútea" to fases["Fase Lútea"],
-                                "Siguiente Menstruación" to fases["Siguiente Menstruación"]
-                            )
+                        if (hoy.time in inicio.time..fin.time) {
+                            Log.d("MenstrualCycleController", "Fase actual: Menstruación (dentro de un periodo)")
+                            callback("Menstruación")
+                            return@addOnSuccessListener
+                        }
+                    }
 
-                            for (i in fechas.indices) {
-                                val faseActual = fechas[i].second ?: continue
-                                val faseSiguiente = fechas.getOrNull(i + 1)?.second
-
-                                if (faseSiguiente != null && hoy >= faseActual && hoy < faseSiguiente) {
-                                    Log.d("MenstrualCycleController", "Fase actual: ${fechas[i].first}")
-                                    callback(fechas[i].first)
-                                    return@addOnSuccessListener
-                                }
-                            }
-
-                            // Si no cae en ninguna, puede que esté justo el día antes del siguiente ciclo
-                            Log.d("MenstrualCycleController", "Fase actual: Fase Lútea")
-                            callback("Fase Lútea")
+                    // Si no estamos en periodo menstrual, calculamos en qué fase estamos
+                    val ultimoPeriodo = if (finPeriodosOrdenados.isNotEmpty()) {
+                        // Usar el último periodo completo como referencia
+                        val ultimoIndiceCompleto = minOf(periodosOrdenados.size, finPeriodosOrdenados.size) - 1
+                        if (ultimoIndiceCompleto >= 0) {
+                            finPeriodosOrdenados[ultimoIndiceCompleto]
                         } else {
-                            callback(null)
+                            periodosOrdenados.last()
                         }
                     } else {
-                        callback(null)
+                        periodosOrdenados.last()
                     }
-                } else {
-                    callback(null)
+
+                    val medias = calcularMedias(periodos, finPeriodos)
+                    val fases = calcularFases(ultimoPeriodo, medias.first, medias.second)
+
+                    // Determinar en qué fase estamos ahora
+                    val fasesOrdenadas = listOf(
+                        "Menstruación" to fases["Menstruación"],
+                        "Fase Folicular" to fases["Fase Folicular"],
+                        "Ovulación" to fases["Ovulación"],
+                        "Fase Lútea" to fases["Fase Lútea"],
+                        "Siguiente Menstruación" to fases["Siguiente Menstruación"]
+                    ).sortedBy { it.second?.time ?: 0 }
+
+                    for (i in 0 until fasesOrdenadas.size - 1) {
+                        val faseActual = fasesOrdenadas[i]
+                        val faseSiguiente = fasesOrdenadas[i + 1]
+
+                        val inicioFase = faseActual.second ?: continue
+                        val finFase = faseSiguiente.second ?: continue
+
+                        if (hoy.time in inicioFase.time until finFase.time) {
+                            Log.d("MenstrualCycleController", "Fase actual: ${faseActual.first}")
+                            callback(faseActual.first)
+                            return@addOnSuccessListener
+                        }
+                    }
+
+                    // Si no caemos en ninguna fase, probablemente estamos en la última
+                    val ultimaFase = fasesOrdenadas.last()
+                    Log.d("MenstrualCycleController", "Fase actual (última): ${ultimaFase.first}")
+                    callback(ultimaFase.first)
                 }
             }
-            .addOnFailureListener {
+            .addOnFailureListener { e ->
+                Log.e("MenstrualCycleController", "Error obteniendo fase actual", e)
                 callback(null)
             }
     }
@@ -114,14 +138,21 @@ class MenstrualCycleController(private val userId: String) {
         val ciclos = mutableListOf<Int>()
         val sangrados = mutableListOf<Int>()
 
+        // Calcular duración de ciclos (de inicio a inicio)
         for (i in 1 until periodos.size) {
             val diasCiclo = ((periodos[i].toDate().time - periodos[i - 1].toDate().time) / (1000 * 60 * 60 * 24)).toInt()
-            ciclos.add(diasCiclo)
+            if (diasCiclo > 0 && diasCiclo <= 45) { // Filtrar ciclos muy cortos o muy largos
+                ciclos.add(diasCiclo)
+            }
         }
 
-        for (i in finPeriodos.indices) {
+        // Calcular duración de sangrados (de inicio a fin)
+        val minSize = minOf(periodos.size, finPeriodos.size)
+        for (i in 0 until minSize) {
             val diasSangrado = ((finPeriodos[i].toDate().time - periodos[i].toDate().time) / (1000 * 60 * 60 * 24)).toInt()
-            sangrados.add(diasSangrado)
+            if (diasSangrado > 0 && diasSangrado <= 10) { // Filtrar duraciones anómalas
+                sangrados.add(diasSangrado)
+            }
         }
 
         val mediaCiclo = if (ciclos.isNotEmpty()) (ciclos.average().roundToInt()) else 28
@@ -132,36 +163,40 @@ class MenstrualCycleController(private val userId: String) {
         return Pair(mediaCiclo, mediaSangrado)
     }
 
-    private fun calcularFases(lastPeriod: Date, mediaCiclo: Int, mediaSangrado: Int): Map<String, Date> {
+    private fun calcularFases(ultimoPeriodo: Date, mediaCiclo: Int, mediaSangrado: Int): Map<String, Date> {
         val fases = mutableMapOf<String, Date>()
         val cal = Calendar.getInstance()
-        cal.time = lastPeriod
 
-        // Fase Menstrual
+        // Asegurarnos de que el ciclo tenga una duración mínima razonable
+        val duracionCiclo = max(21, mediaCiclo)
+        val duracionSangrado = max(1, mediaSangrado)
+
+        // Calcular la fecha de la última menstruación
+        cal.time = ultimoPeriodo
         fases["Menstruación"] = cal.time
-        Log.d("MenstrualCycleController", "Fase Menstruación: ${cal.time}")
+        Log.d("MenstrualCycleController", "Fecha Menstruación: ${cal.time}")
 
-        // Fase Folicular
-        cal.add(Calendar.DAY_OF_MONTH, mediaSangrado)
+        // Fase Folicular (después de la menstruación)
+        cal.add(Calendar.DAY_OF_MONTH, duracionSangrado)
         fases["Fase Folicular"] = cal.time
-        Log.d("MenstrualCycleController", "Fase Folicular: ${cal.time}")
+        Log.d("MenstrualCycleController", "Fecha Fase Folicular: ${cal.time}")
 
-        // Ovulación
-        cal.add(Calendar.DAY_OF_MONTH, (mediaCiclo - mediaSangrado) / 2)
+        // Ovulación (a mitad del ciclo, descontando los días de sangrado)
+        val diasHastaOvulacion = (duracionCiclo - duracionSangrado) / 2
+        cal.add(Calendar.DAY_OF_MONTH, max(1, diasHastaOvulacion))
         fases["Ovulación"] = cal.time
-        Log.d("MenstrualCycleController", "Ovulación: ${cal.time}")
+        Log.d("MenstrualCycleController", "Fecha Ovulación: ${cal.time}")
 
-        // Fase Lútea
+        // Fase Lútea (después de la ovulación)
         cal.add(Calendar.DAY_OF_MONTH, 3)
         fases["Fase Lútea"] = cal.time
-        Log.d("MenstrualCycleController", "Fase Lútea: ${cal.time}")
+        Log.d("MenstrualCycleController", "Fecha Fase Lútea: ${cal.time}")
 
         // Siguiente Menstruación
-        cal.add(Calendar.DAY_OF_MONTH, mediaCiclo - mediaSangrado - 3)
+        val diasRestantes = duracionCiclo - duracionSangrado - diasHastaOvulacion - 3
+        cal.add(Calendar.DAY_OF_MONTH, max(1, diasRestantes))
         fases["Siguiente Menstruación"] = cal.time
-        Log.d("MenstrualCycleController", "Siguiente Menstruación: ${cal.time}")
-
-        Log.d("MenstrualCycleController", "Fases calculadas: $fases")
+        Log.d("MenstrualCycleController", "Fecha Siguiente Menstruación: ${cal.time}")
 
         return fases
     }

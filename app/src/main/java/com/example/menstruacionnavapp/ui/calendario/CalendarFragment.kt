@@ -23,6 +23,7 @@ class CalendarFragment : Fragment() {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private var selectedDate: Long = System.currentTimeMillis()
+    private var lastRegisteredPeriodStart: Timestamp? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,10 +42,14 @@ class CalendarFragment : Fragment() {
         calendar.add(Calendar.MONTH, -6)
         val sixMonthsAgo = calendar.timeInMillis
 
+        // Limitar la fecha máxima seleccionable en el calendario a hoy
+        binding.calendarView.maxDate = today
+
         binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val selectedCalendar = Calendar.getInstance()
             selectedCalendar.set(year, month, dayOfMonth)
             selectedDate = selectedCalendar.timeInMillis
+            updateButtonStates()
         }
 
         binding.btnRegisterPeriod.setOnClickListener {
@@ -79,7 +84,9 @@ class CalendarFragment : Fragment() {
                                         .update("periodos", FieldValue.arrayUnion(newPeriodStart))
                                         .addOnSuccessListener {
                                             showDateToast("Período registrado")
+                                            lastRegisteredPeriodStart = newPeriodStart
                                             checkIfInPeriod()
+                                            updateButtonStates()
                                         }
                                         .addOnFailureListener { e ->
                                             Toast.makeText(requireContext(), "Error al registrar: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -100,19 +107,54 @@ class CalendarFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            // Verificar que la fecha de fin no sea anterior a la de inicio
+            if (lastRegisteredPeriodStart != null && selectedDate < lastRegisteredPeriodStart!!.toDate().time) {
+                Toast.makeText(requireContext(), "La fecha de fin no puede ser anterior a la fecha de inicio del período", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
             val timestamp = Timestamp(Date(selectedDate))
             db.collection("usuarios").document(userId)
                 .update("finPeriodos", FieldValue.arrayUnion(timestamp))
                 .addOnSuccessListener {
                     showDateToast("Fin de período registrado")
+                    lastRegisteredPeriodStart = null
                     checkIfInPeriod()
+                    updateButtonStates()
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(requireContext(), "Error al registrar fin: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }
 
+        loadLastPeriodStart()
         checkIfInPeriod()
+    }
+
+    // Cargar el último inicio de periodo registrado
+    private fun loadLastPeriodStart() {
+        val userId = auth.currentUser?.uid ?: return
+
+        db.collection("usuarios").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val periodos = document.get("periodos") as? List<Timestamp> ?: emptyList()
+                    val finPeriodos = document.get("finPeriodos") as? List<Timestamp> ?: emptyList()
+
+                    if (periodos.size > finPeriodos.size) {
+                        lastRegisteredPeriodStart = periodos.last()
+                    }
+
+                    updateButtonStates()
+                }
+            }
+    }
+
+    // Actualizar el estado de habilitación de los botones
+    private fun updateButtonStates() {
+        val isInPeriod = lastRegisteredPeriodStart != null
+        binding.btnRegisterPeriod.isEnabled = !isInPeriod
+        binding.btnRegisterEndPeriod.isEnabled = isInPeriod
     }
 
     private fun showDateToast(messagePrefix: String) {
@@ -141,10 +183,13 @@ class CalendarFragment : Fragment() {
                     // Check if we have more starts than ends (meaning current period is ongoing)
                     if (sortedStarts.size > sortedEnds.size) {
                         val lastStart = sortedStarts.last()
+                        lastRegisteredPeriodStart = lastStart
                         if (today >= lastStart) {
                             isInPeriod = true
                             daysInPeriod = ((today.seconds - lastStart.seconds) / (24 * 60 * 60)).toInt() + 1
                         }
+                    } else {
+                        lastRegisteredPeriodStart = null
                     }
 
                     // Also check if today is between any start and end date
@@ -166,6 +211,7 @@ class CalendarFragment : Fragment() {
 
                     // Update last period info
                     updateLastPeriodInfo(sortedStarts, sortedEnds, isInPeriod)
+                    updateButtonStates()
                 }
             }
             .addOnFailureListener {
@@ -262,3 +308,4 @@ class CalendarFragment : Fragment() {
         return false
     }
 }
+
