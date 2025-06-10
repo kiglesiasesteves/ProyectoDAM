@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">CicloFit</string>
+    <string name="title_home">Resumen</string>
+    <string name="title_dashboard">Calendario</string>
+    <string name="title_notifications">Fitness</string>
+    <string name="bienvenido_a_ciclofit_premium_n_n_con_ciclofit_premium_podr_s_disfrutar_de_todas_las_funcionalidades_de_la_aplicaci_n_sin_anuncios_n_n_adem_s_tendr_s_acceso_a_funcionalidades_exclusivas_como_estad_sticas_avanzadas_y_entrenamientos_personalizados_de_nuestros_expertos_n_n_realiza_tu_pago_de_suscripci_n_de_forma_f_cil_y_segura_a_trav_s_de_paypal_n_n_desbloquea_todo_tu_potencial_con_ciclofit_premium_en_el_siguiente_bot_n">🌟 ¡Bienvenido a CicloFit Premium! 🌟 \n\n 📈 Con CicloFit Premium podrás disfrutar de todas las funcionalidades de la aplicación sin anuncios.📈 \n\n 🏋️ Además, tendrás acceso a funcionalidades exclusivas como estadísticas avanzadas y entrenamientos personalizados de nuestros expertos🏋️ \n\n💳 Realiza tu pago de suscripción de forma fácil y segura a través de PayPal.💳 \n \n 🔓 ¡Desbloquea todo tu potencial con CicloFit Premium en el siguiente botón!🔓</string>
+    <string name="gimasios">Gimasios</string>
+    <string name="premium">Premium</string>
+</resources>
